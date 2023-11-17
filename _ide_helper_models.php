@@ -1,10 +1,16 @@
 <?php
 
-namespace App\Models;
+// @formatter:off
+/**
+ * A helper file for your Eloquent Models
+ * Copy the phpDocs from this file to the correct Model,
+ * And remove them from this file, to prevent double declarations.
+ *
+ * @author Barry vd. Heuvel <barryvdh@gmail.com>
+ */
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
+namespace App\Models{
 /**
  * App\Models\Clip
  *
@@ -25,41 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Clip whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Clip whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Clip whereUrl($value)
- * @mixin \Eloquent
  */
-class Clip extends Model
-{
-    /**
-     * @param array<int,mixed> $array
-     */
-    public static function create(array $array): void
-    {
-    }
-
-    use HasFactory;
-
-    /**
-     * @var string
-     */
-    private $slug;
-
-    /**
-     * @var string
-     */
-    private $password;
-
-    /**
-     * @var string
-     */
-    private $clip;
-
-    /**
-     * @var string
-     */
-    private $url;
-
-    /**
-     * @return timestamp
-     */
-    private $expiredAt;
+	class Clip extends \Eloquent {}
 }
+

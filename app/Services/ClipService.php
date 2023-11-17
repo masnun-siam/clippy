@@ -24,7 +24,7 @@ class ClipService
         }
     }
 
-    public function saveClip(Request $request, $id)
+    public function saveClip(Request $request, int $id) : JsonResponse
     {
         $slug = $request?->slug ?? $this->generateAndGetSlug(6);
         $url = $request?->url;
@@ -112,7 +112,7 @@ class ClipService
 
     /// param int $id
     /// param string $password
-    public function verifyPassword($id, $password) : mixed {
+    public function verifyPassword(int $id, string $password) : ?string {
         $clip = Clip::find($id);
 
         $isVerified = false;
@@ -124,7 +124,7 @@ class ClipService
         return $isVerified ? $clip->url : null;
     }
 
-    public function deleteClip($id)
+    public function deleteClip($id) : JsonResponse
     {
         $clip = Clip::find($id);
 
