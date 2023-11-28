@@ -24,7 +24,7 @@ class ClipService
         }
     }
 
-    public function saveClip(Request $request, int $id) : JsonResponse
+    public function saveClip(Request $request, ?int $id = null) : JsonResponse
     {
         $slug = $request?->slug ?? $this->generateAndGetSlug(6);
         $url = $request?->url;
