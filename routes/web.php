@@ -21,6 +21,25 @@ Route::get('/', function () {
     return Auth::check() ? redirect()->route('dashboard') : view('welcome');
 })->name('welcome');
 
+Route::get('/clear', function () {
+    // This route is for clearing cache, sessions, etc.
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+    Artisan::call('route:clear');
+    Artisan::call('config:clear');
+    // You can implement the logic here if needed
+    return 'Cache cleared!';
+})->name('clear');
+
+Route::get('/cache', function () {
+    // This route is for caching the views, routes, etc.
+    Artisan::call('view:cache');
+    Artisan::call('route:cache');
+    Artisan::call('config:cache');
+    // You can implement the logic here if needed
+    return 'Cache created!';
+})->name('cache');
+
 // Documentation route
 Route::get('/docs', function () {
     return redirect('/docs/index.html');
