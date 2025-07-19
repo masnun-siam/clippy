@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Clippy'),
 
     /*
     |--------------------------------------------------------------------------
@@ -56,6 +56,9 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+
+    'logo' => env('APP_LOGO', '/storage/logo.png'),
+    'logo_alt' => env('APP_LOGO_ALT', 'Clippy'),
 
     'asset_url' => env('ASSET_URL'),
 
@@ -184,5 +187,18 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Registration Configuration
+    |--------------------------------------------------------------------------
+    |
+    | This option controls whether user registration is enabled or disabled.
+    | When disabled, users cannot create new accounts and signup buttons
+    | will be hidden throughout the application.
+    |
+    */
+
+    'registration_enabled' => env('REGISTRATION_ENABLED', true),
 
 ];

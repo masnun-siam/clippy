@@ -1,0 +1,160 @@
+name: Authentication
+description: |-
+
+  APIs for managing user authentication
+endpoints:
+  -
+    httpMethods:
+      - POST
+    uri: api/login
+    metadata:
+      groupName: Authentication
+      groupDescription: |-
+
+        APIs for managing user authentication
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Login user'
+      description: 'Authenticate a user and return an access token for API access.'
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      email:
+        name: email
+        description: "The user's email address."
+        required: true
+        example: user@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        custom: []
+      password:
+        name: password
+        description: "The user's password."
+        required: true
+        example: password123
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        custom: []
+    cleanBodyParameters:
+      email: user@example.com
+      password: password123
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+              "message": "Successfully logged in",
+              "success": true,
+              "token": "1|abc123def456ghi789jkl012mno345pqr678stu901vwx234yz",
+              "data": {
+                  "id": 1,
+                  "name": "John Doe",
+                  "email": "user@example.com",
+                  "created_at": "2023-01-01T00:00:00.000000Z",
+                  "updated_at": "2023-01-01T00:00:00.000000Z"
+              }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+              "message": "Wrong Credentials",
+              "success": false
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 422
+        content: |-
+          {
+              "message": "The given data was invalid.",
+              "errors": {
+                  "email": ["The email field is required."],
+                  "password": ["The password field is required."]
+              }
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - GET
+    uri: api/user
+    metadata:
+      groupName: Authentication
+      groupDescription: |-
+
+        APIs for managing user authentication
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get authenticated user'
+      description: "Retrieve the currently authenticated user's information."
+      authenticated: true
+      custom: []
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+              "message": "Successfully retrieved user",
+              "success": true,
+              "data": {
+                  "id": 1,
+                  "name": "John Doe",
+                  "email": "user@example.com",
+                  "created_at": "2023-01-01T00:00:00.000000Z",
+                  "updated_at": "2023-01-01T00:00:00.000000Z"
+              }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+              "message": "Unauthenticated"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer P5Ec1kaavbZdV6g63e8f4hD'
+    controller: null
+    method: null
+    route: null
+    custom: []

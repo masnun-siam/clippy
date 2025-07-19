@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Password Protected Link - Clippy')
+@section('title', 'Login - Clippy')
 
 @section('content')
 <div class="container">
@@ -9,11 +9,10 @@
             <div class="card shadow">
                 <div class="card-body p-5">
                     <div class="text-center mb-4">
-                        <div class="mb-3">
-                            <i class="fas fa-lock text-warning" style="font-size: 3rem;"></i>
-                        </div>
-                        <h1 class="h3 mb-3 font-weight-bold">Password Protected</h1>
-                        <p class="text-muted">This link is password protected. Please enter the password to continue.</p>
+                        <h1 class="h3 mb-3 font-weight-bold text-primary">
+                            <i class="fas fa-link me-2"></i>Clippy
+                        </h1>
+                        <p class="text-muted">Sign in to your account</p>
                     </div>
 
                     @if ($errors->any())
@@ -27,14 +26,37 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('clip.verify-password', $clip->id) }}">
+                    <form method="POST" action="{{ route('login.post') }}">
                         @csrf
 
-                        <div class="mb-4">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <input type="email"
+                                       class="form-control @error('email') is-invalid @enderror"
+                                       id="email"
+                                       name="email"
+                                       value="{{ old('email') }}"
+                                       required
+                                       autocomplete="email"
+                                       autofocus
+                                       placeholder="Enter your email">
+                            </div>
+                            @error('email')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
                             <div class="input-group">
                                 <span class="input-group-text">
-                                    <i class="fas fa-key"></i>
+                                    <i class="fas fa-lock"></i>
                                 </span>
                                 <input type="password"
                                        class="form-control @error('password') is-invalid @enderror"
@@ -42,8 +64,7 @@
                                        name="password"
                                        required
                                        autocomplete="current-password"
-                                       autofocus
-                                       placeholder="Enter the password">
+                                       placeholder="Enter your password">
                                 <button type="button" class="btn btn-outline-secondary" id="togglePassword">
                                     <i class="fas fa-eye"></i>
                                 </button>
@@ -55,18 +76,29 @@
                             @enderror
                         </div>
 
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                            <label class="form-check-label" for="remember">
+                                Remember me
+                            </label>
+                        </div>
+
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center">
-                                <i class="fas fa-unlock me-2"></i>Access Link
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
                             </button>
                         </div>
                     </form>
 
                     <div class="text-center mt-4">
-                        <p class="text-muted small">
-                            <i class="fas fa-info-circle me-1"></i>
-                            Don't have the password? Contact the person who shared this link with you.
-                        </p>
+                        @if($registrationEnabled)
+                            <p class="text-muted">
+                                Don't have an account?
+                                <a href="{{ route('register') }}" class="text-primary text-decoration-none">
+                                    Sign up here
+                                </a>
+                            </p>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -93,9 +125,9 @@
         }
     });
 
-    // Auto-focus on password field
+    // Auto-focus on email field
     document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('password').focus();
+        document.getElementById('email').focus();
     });
 </script>
 @endpush

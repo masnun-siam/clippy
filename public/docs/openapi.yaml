@@ -1,0 +1,741 @@
+openapi: 3.0.3
+info:
+  title: 'Clippy API Documentation'
+  description: 'API documentation for Clippy, a simple and elegant URL shortener service.'
+  version: 1.0.0
+servers:
+  -
+    url: 'https://clippy.msiamn.dev'
+paths:
+  /api/login:
+    post:
+      summary: 'Login user'
+      operationId: loginUser
+      description: 'Authenticate a user and return an access token for API access.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Successfully logged in'
+                  success: true
+                  token: 1|abc123def456ghi789jkl012mno345pqr678stu901vwx234yz
+                  data:
+                    id: 1
+                    name: 'John Doe'
+                    email: user@example.com
+                    created_at: '2023-01-01T00:00:00.000000Z'
+                    updated_at: '2023-01-01T00:00:00.000000Z'
+                properties:
+                  message:
+                    type: string
+                    example: 'Successfully logged in'
+                  success:
+                    type: boolean
+                    example: true
+                  token:
+                    type: string
+                    example: 1|abc123def456ghi789jkl012mno345pqr678stu901vwx234yz
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: 'John Doe'
+                      email:
+                        type: string
+                        example: user@example.com
+                      created_at:
+                        type: string
+                        example: '2023-01-01T00:00:00.000000Z'
+                      updated_at:
+                        type: string
+                        example: '2023-01-01T00:00:00.000000Z'
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Wrong Credentials'
+                  success: false
+                properties:
+                  message:
+                    type: string
+                    example: 'Wrong Credentials'
+                  success:
+                    type: boolean
+                    example: false
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The given data was invalid.'
+                  errors:
+                    email:
+                      - 'The email field is required.'
+                    password:
+                      - 'The password field is required.'
+                properties:
+                  message:
+                    type: string
+                    example: 'The given data was invalid.'
+                  errors:
+                    type: object
+                    properties:
+                      email:
+                        type: array
+                        example:
+                          - 'The email field is required.'
+                        items:
+                          type: string
+                      password:
+                        type: array
+                        example:
+                          - 'The password field is required.'
+                        items:
+                          type: string
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: "The user's email address."
+                  example: user@example.com
+                password:
+                  type: string
+                  description: "The user's password."
+                  example: password123
+              required:
+                - email
+                - password
+      security: []
+  /api/user:
+    get:
+      summary: 'Get authenticated user'
+      operationId: getAuthenticatedUser
+      description: "Retrieve the currently authenticated user's information."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Successfully retrieved user'
+                  success: true
+                  data:
+                    id: 1
+                    name: 'John Doe'
+                    email: user@example.com
+                    created_at: '2023-01-01T00:00:00.000000Z'
+                    updated_at: '2023-01-01T00:00:00.000000Z'
+                properties:
+                  message:
+                    type: string
+                    example: 'Successfully retrieved user'
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: 'John Doe'
+                      email:
+                        type: string
+                        example: user@example.com
+                      created_at:
+                        type: string
+                        example: '2023-01-01T00:00:00.000000Z'
+                      updated_at:
+                        type: string
+                        example: '2023-01-01T00:00:00.000000Z'
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated
+      tags:
+        - Authentication
+  /api/clips:
+    get:
+      summary: 'Get all clips'
+      operationId: getAllClips
+      description: 'Retrieve all clips belonging to the authenticated user.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Successfully Retrieved Clips'
+                  success: true
+                  data:
+                    -
+                      id: 1
+                      url: 'https://example.com/very-long-url'
+                      slug: abc123
+                      password: null
+                      expires_at: null
+                      created_at: '2023-01-01T00:00:00.000000Z'
+                      updated_at: '2023-01-01T00:00:00.000000Z'
+                properties:
+                  message:
+                    type: string
+                    example: 'Successfully Retrieved Clips'
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        url: 'https://example.com/very-long-url'
+                        slug: abc123
+                        password: null
+                        expires_at: null
+                        created_at: '2023-01-01T00:00:00.000000Z'
+                        updated_at: '2023-01-01T00:00:00.000000Z'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        url:
+                          type: string
+                          example: 'https://example.com/very-long-url'
+                        slug:
+                          type: string
+                          example: abc123
+                        password:
+                          type: string
+                          example: null
+                        expires_at:
+                          type: string
+                          example: null
+                        created_at:
+                          type: string
+                          example: '2023-01-01T00:00:00.000000Z'
+                        updated_at:
+                          type: string
+                          example: '2023-01-01T00:00:00.000000Z'
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated
+      tags:
+        - 'Clip Management'
+  /api/clip:
+    post:
+      summary: 'Create a new clip'
+      operationId: createANewClip
+      description: 'Create a new shortened URL clip.'
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Successfully Created Clip'
+                  success: true
+                  data:
+                    id: 1
+                    url: 'https://example.com/very-long-url'
+                    slug: abc123
+                    password: null
+                    expires_at: null
+                    created_at: '2023-01-01T00:00:00.000000Z'
+                    updated_at: '2023-01-01T00:00:00.000000Z'
+                properties:
+                  message:
+                    type: string
+                    example: 'Successfully Created Clip'
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      url:
+                        type: string
+                        example: 'https://example.com/very-long-url'
+                      slug:
+                        type: string
+                        example: abc123
+                      password:
+                        type: string
+                        example: null
+                      expires_at:
+                        type: string
+                        example: null
+                      created_at:
+                        type: string
+                        example: '2023-01-01T00:00:00.000000Z'
+                      updated_at:
+                        type: string
+                        example: '2023-01-01T00:00:00.000000Z'
+        400:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The url field is required.'
+                  success: false
+                properties:
+                  message:
+                    type: string
+                    example: 'The url field is required.'
+                  success:
+                    type: boolean
+                    example: false
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated
+      tags:
+        - 'Clip Management'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: 'The URL to shorten.'
+                  example: 'https://example.com/very-long-url'
+                slug:
+                  type: string
+                  description: 'optional Custom slug for the shortened URL.'
+                  example: my-custom-slug
+                password:
+                  type: string
+                  description: 'optional Password to protect the clip.'
+                  example: secret123
+                expires_at:
+                  type: string
+                  description: 'optional Expiration date for the clip (ISO 8601 format).'
+                  example: '2023-12-31T23:59:59Z'
+              required:
+                - url
+  '/api/clip/{id}':
+    put:
+      summary: 'Update a clip'
+      operationId: updateAClip
+      description: 'Update an existing clip by its ID.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Successfully Updated Clip'
+                  success: true
+                  data:
+                    id: 1
+                    url: 'https://example.com/updated-url'
+                    slug: updated-slug
+                    password: null
+                    expires_at: null
+                    created_at: '2023-01-01T00:00:00.000000Z'
+                    updated_at: '2023-01-01T12:00:00.000000Z'
+                properties:
+                  message:
+                    type: string
+                    example: 'Successfully Updated Clip'
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      url:
+                        type: string
+                        example: 'https://example.com/updated-url'
+                      slug:
+                        type: string
+                        example: updated-slug
+                      password:
+                        type: string
+                        example: null
+                      expires_at:
+                        type: string
+                        example: null
+                      created_at:
+                        type: string
+                        example: '2023-01-01T00:00:00.000000Z'
+                      updated_at:
+                        type: string
+                        example: '2023-01-01T12:00:00.000000Z'
+        400:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The url field is required.'
+                  success: false
+                properties:
+                  message:
+                    type: string
+                    example: 'The url field is required.'
+                  success:
+                    type: boolean
+                    example: false
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Clip not found'
+                  success: false
+                properties:
+                  message:
+                    type: string
+                    example: 'Clip not found'
+                  success:
+                    type: boolean
+                    example: false
+      tags:
+        - 'Clip Management'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: 'The URL to shorten.'
+                  example: 'https://example.com/updated-url'
+                slug:
+                  type: string
+                  description: 'optional Custom slug for the shortened URL.'
+                  example: updated-slug
+                password:
+                  type: string
+                  description: 'optional Password to protect the clip.'
+                  example: newsecret123
+                expires_at:
+                  type: string
+                  description: 'optional Expiration date for the clip (ISO 8601 format).'
+                  example: '2023-12-31T23:59:59Z'
+              required:
+                - url
+    delete:
+      summary: 'Delete a clip'
+      operationId: deleteAClip
+      description: 'Delete a clip by its ID.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Successfully Deleted Clip'
+                  success: true
+                  data: []
+                properties:
+                  message:
+                    type: string
+                    example: 'Successfully Deleted Clip'
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example: []
+        400:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The id field is required.'
+                  success: false
+                properties:
+                  message:
+                    type: string
+                    example: 'The id field is required.'
+                  success:
+                    type: boolean
+                    example: false
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Clip not found'
+                  success: false
+                properties:
+                  message:
+                    type: string
+                    example: 'Clip not found'
+                  success:
+                    type: boolean
+                    example: false
+      tags:
+        - 'Clip Management'
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the clip to update.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  '/api/clip/{slug}':
+    get:
+      summary: 'Get a clip by slug'
+      operationId: getAClipBySlug
+      description: "Retrieve a specific clip by its slug. If the clip is password protected,\nthe password must be provided in the request."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Successfully Retrieved Clip'
+                  success: true
+                  data:
+                    id: 1
+                    url: 'https://example.com/very-long-url'
+                    slug: abc123
+                    password: null
+                    expires_at: null
+                    created_at: '2023-01-01T00:00:00.000000Z'
+                    updated_at: '2023-01-01T00:00:00.000000Z'
+                properties:
+                  message:
+                    type: string
+                    example: 'Successfully Retrieved Clip'
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      url:
+                        type: string
+                        example: 'https://example.com/very-long-url'
+                      slug:
+                        type: string
+                        example: abc123
+                      password:
+                        type: string
+                        example: null
+                      expires_at:
+                        type: string
+                        example: null
+                      created_at:
+                        type: string
+                        example: '2023-01-01T00:00:00.000000Z'
+                      updated_at:
+                        type: string
+                        example: '2023-01-01T00:00:00.000000Z'
+        400:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The slug field is required.'
+                  success: false
+                properties:
+                  message:
+                    type: string
+                    example: 'The slug field is required.'
+                  success:
+                    type: boolean
+                    example: false
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Incorrect password'
+                  success: false
+                properties:
+                  message:
+                    type: string
+                    example: 'Incorrect password'
+                  success:
+                    type: boolean
+                    example: false
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Clip not found'
+                  success: false
+                properties:
+                  message:
+                    type: string
+                    example: 'Clip not found'
+                  success:
+                    type: boolean
+                    example: false
+      tags:
+        - 'Clip Management'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: 'optional Password for protected clips.'
+                  example: secret123
+    parameters:
+      -
+        in: path
+        name: slug
+        description: 'The slug of the clip to retrieve.'
+        example: abc123
+        required: true
+        schema:
+          type: string
+tags:
+  -
+    name: Authentication
+    description: "\nAPIs for managing user authentication"
+  -
+    name: 'Clip Management'
+    description: "\nAPIs for managing URL clips (shortened URLs)"
+components:
+  securitySchemes:
+    default:
+      type: http
+      scheme: bearer
+      description: 'You can retrieve your token by authenticating with the <code>/api/login</code> endpoint.'
+security:
+  -
+    default: []

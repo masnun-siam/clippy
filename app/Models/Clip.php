@@ -29,37 +29,88 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Clip extends Model
 {
-    /**
-     * @param array<int,mixed> $array
-     */
-    public static function create(array $array): void
-    {
-    }
-
     use HasFactory;
 
     /**
-     * @var string
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
      */
-    private $slug;
+    protected $fillable = [
+        'slug',
+        'url',
+        'password',
+        'expires_at',
+    ];
 
     /**
-     * @var string
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
      */
-    private $password;
+    protected $casts = [
+        'expires_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     /**
-     * @var string
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
      */
-    private $clip;
+    protected $hidden = [
+        'password',
+    ];
 
     /**
-     * @var string
+     * Check if the clip is expired
      */
-    private $url;
+    public function isExpired(): bool
+    {
+        return $this->expires_at && now()->isAfter($this->expires_at);
+    }
 
     /**
-     * @return timestamp
+     * Check if the clip is password protected
      */
-    private $expiredAt;
+    public function isPasswordProtected(): bool
+    {
+        return !empty($this->password);
+    }
+
+    /**
+     * Get the full short URL
+     */
+    public function getShortUrlAttribute(): string
+    {
+        return url('/' . $this->slug);
+    }
+
+    /**
+     * Scope for active clips (not expired)
+     */
+    public function scopeActive($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('expires_at')
+              ->orWhere('expires_at', '>', now());
+        });
+    }
+
+    /**
+     * Scope for expired clips
+     */
+    public function scopeExpired($query)
+    {
+        return $query->where('expires_at', '<', now());
+    }
+
+    /**
+     * Scope for password protected clips
+     */
+    public function scopePasswordProtected($query)
+    {
+        return $query->whereNotNull('password');
+    }
 }

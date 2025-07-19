@@ -1,0 +1,399 @@
+{
+    "variable": [
+        {
+            "id": "baseUrl",
+            "key": "baseUrl",
+            "type": "string",
+            "name": "string",
+            "value": "https:\/\/clippy.msiamn.dev"
+        }
+    ],
+    "info": {
+        "name": "Clippy API Documentation",
+        "_postman_id": "76dc8c86-3cd6-4d00-b506-afe6236ac968",
+        "description": "API documentation for Clippy, a simple and elegant URL shortener service.",
+        "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
+    },
+    "item": [
+        {
+            "name": "Authentication",
+            "description": "\nAPIs for managing user authentication",
+            "item": [
+                {
+                    "name": "Login user",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/login",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/login"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"email\":\"user@example.com\",\"password\":\"password123\"}"
+                        },
+                        "description": "Authenticate a user and return an access token for API access.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n    \"message\": \"Successfully logged in\",\n    \"success\": true,\n    \"token\": \"1|abc123def456ghi789jkl012mno345pqr678stu901vwx234yz\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Doe\",\n        \"email\": \"user@example.com\",\n        \"created_at\": \"2023-01-01T00:00:00.000000Z\",\n        \"updated_at\": \"2023-01-01T00:00:00.000000Z\"\n    }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n    \"message\": \"Wrong Credentials\",\n    \"success\": false\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\n    \"message\": \"The given data was invalid.\",\n    \"errors\": {\n        \"email\": [\"The email field is required.\"],\n        \"password\": [\"The password field is required.\"]\n    }\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Get authenticated user",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/user",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/user"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Retrieve the currently authenticated user's information."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n    \"message\": \"Successfully retrieved user\",\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"John Doe\",\n        \"email\": \"user@example.com\",\n        \"created_at\": \"2023-01-01T00:00:00.000000Z\",\n        \"updated_at\": \"2023-01-01T00:00:00.000000Z\"\n    }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n    \"message\": \"Unauthenticated\"\n}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Clip Management",
+            "description": "\nAPIs for managing URL clips (shortened URLs)",
+            "item": [
+                {
+                    "name": "Get all clips",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/clips",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/clips"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Retrieve all clips belonging to the authenticated user."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n    \"message\": \"Successfully Retrieved Clips\",\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"url\": \"https:\/\/example.com\/very-long-url\",\n            \"slug\": \"abc123\",\n            \"password\": null,\n            \"expires_at\": null,\n            \"created_at\": \"2023-01-01T00:00:00.000000Z\",\n            \"updated_at\": \"2023-01-01T00:00:00.000000Z\"\n        }\n    ]\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n    \"message\": \"Unauthenticated\"\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Create a new clip",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/clip",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/clip"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"url\":\"https:\\\/\\\/example.com\\\/very-long-url\",\"slug\":\"my-custom-slug\",\"password\":\"secret123\",\"expires_at\":\"2023-12-31T23:59:59Z\"}"
+                        },
+                        "description": "Create a new shortened URL clip."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\n    \"message\": \"Successfully Created Clip\",\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"url\": \"https:\/\/example.com\/very-long-url\",\n        \"slug\": \"abc123\",\n        \"password\": null,\n        \"expires_at\": null,\n        \"created_at\": \"2023-01-01T00:00:00.000000Z\",\n        \"updated_at\": \"2023-01-01T00:00:00.000000Z\"\n    }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 400,
+                            "body": "{\n    \"message\": \"The url field is required.\",\n    \"success\": false\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n    \"message\": \"Unauthenticated\"\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Update a clip",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/clip\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/clip\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "1",
+                                    "description": "The ID of the clip to update."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"url\":\"https:\\\/\\\/example.com\\\/updated-url\",\"slug\":\"updated-slug\",\"password\":\"newsecret123\",\"expires_at\":\"2023-12-31T23:59:59Z\"}"
+                        },
+                        "description": "Update an existing clip by its ID."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n    \"message\": \"Successfully Updated Clip\",\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"url\": \"https:\/\/example.com\/updated-url\",\n        \"slug\": \"updated-slug\",\n        \"password\": null,\n        \"expires_at\": null,\n        \"created_at\": \"2023-01-01T00:00:00.000000Z\",\n        \"updated_at\": \"2023-01-01T12:00:00.000000Z\"\n    }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 400,
+                            "body": "{\n    \"message\": \"The url field is required.\",\n    \"success\": false\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n    \"message\": \"Unauthenticated\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\n    \"message\": \"Clip not found\",\n    \"success\": false\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Get a clip by slug",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/clip\/:slug",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/clip\/:slug",
+                            "variable": [
+                                {
+                                    "id": "slug",
+                                    "key": "slug",
+                                    "value": "abc123",
+                                    "description": "The slug of the clip to retrieve."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"password\":\"secret123\"}"
+                        },
+                        "description": "Retrieve a specific clip by its slug. If the clip is password protected,\nthe password must be provided in the request."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n    \"message\": \"Successfully Retrieved Clip\",\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"url\": \"https:\/\/example.com\/very-long-url\",\n        \"slug\": \"abc123\",\n        \"password\": null,\n        \"expires_at\": null,\n        \"created_at\": \"2023-01-01T00:00:00.000000Z\",\n        \"updated_at\": \"2023-01-01T00:00:00.000000Z\"\n    }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 400,
+                            "body": "{\n    \"message\": \"The slug field is required.\",\n    \"success\": false\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n    \"message\": \"Unauthenticated\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\n    \"message\": \"Incorrect password\",\n    \"success\": false\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\n    \"message\": \"Clip not found\",\n    \"success\": false\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete a clip",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/clip\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/clip\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "1",
+                                    "description": "The ID of the clip to delete."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Delete a clip by its ID."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n    \"message\": \"Successfully Deleted Clip\",\n    \"success\": true,\n    \"data\": []\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 400,
+                            "body": "{\n    \"message\": \"The id field is required.\",\n    \"success\": false\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n    \"message\": \"Unauthenticated\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\n    \"message\": \"Clip not found\",\n    \"success\": false\n}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "key",
+                "type": "string"
+            }
+        ]
+    }
+}
