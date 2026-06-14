@@ -37,25 +37,25 @@ Clippy is a self-hosted URL shortener built with Laravel. Shorten long URLs into
 
 ### Dashboard
 
-![Dashboard](docs/screenshots/dashboard.png)
+<img width="1812" height="998" alt="dashboard" src="https://github.com/user-attachments/assets/fb06f112-c296-41aa-9908-39d68769b7b1" />
 
 _The main dashboard showing all clips with stats overview — total, active, password-protected, and expired counts._
 
 ### Create a Clip
 
-![Create Clip](docs/screenshots/create-clip.png)
+<img width="1822" height="875" alt="create" src="https://github.com/user-attachments/assets/5b50bf63-2799-41bc-9194-46fdfb5e1a6f" />
 
 _Create a new shortened URL with optional custom slug, password protection, and expiry date._
 
 ### Clip Detail
 
-![Clip Detail](docs/screenshots/clip-detail.png)
+<img width="1812" height="999" alt="CleanShot 2026-06-14 at 15 24 27" src="https://github.com/user-attachments/assets/4fdd19d3-3df5-4a2f-b150-7260efc873e6" />
 
 _View and manage an individual clip — copy the short URL, edit settings, or delete._
 
 ### Login
 
-![Login](docs/screenshots/login.png)
+<img width="1809" height="998" alt="login" src="https://github.com/user-attachments/assets/a27a838f-51f0-4019-8213-e16cd140cb8a" />
 
 _Clean login screen. Registration can be enabled/disabled via config._
 
