@@ -44,12 +44,12 @@ jobs:
           rm -rf README.md
 
       - name: Upload via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          server-dir: ${{ secrets.FTP_PATH }}
+          server: ${{ secrets.SERVER_ID }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          server-dir: ${{ secrets.SERVER_DIR }}
           local-dir: ./
           exclude: |
             .git/**
