@@ -39,6 +39,76 @@
                     <form method="POST" action="{{ route('clips.update', $clip->id) }}" id="clipForm">
                         @csrf
                         @method('PUT')
+                        <input type="hidden" name="type" id="clipType" value="{{ $clip->type ?? 'url' }}">
+
+                        <!-- Type Tabs -->
+                        <ul class="nav nav-tabs mb-4" id="clipTypeTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {{ ($clip->type ?? 'url') === 'url' ? 'active' : '' }}" id="link-tab" data-bs-toggle="tab" data-bs-target="#linkPane" type="button" role="tab">
+                                    <i class="fas fa-link me-1"></i>Link
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {{ ($clip->type ?? 'url') === 'html' ? 'active' : '' }}" id="html-tab" data-bs-toggle="tab" data-bs-target="#htmlPane" type="button" role="tab">
+                                    <i class="fas fa-code me-1"></i>HTML
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <!-- Link Tab -->
+                            <div class="tab-pane fade {{ ($clip->type ?? 'url') === 'url' ? 'show active' : '' }}" id="linkPane" role="tabpanel">
+                                <div class="mb-4">
+                                    <label for="url" class="form-label fw-bold">
+                                        <i class="fas fa-globe me-2"></i>Original URL *
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-link"></i>
+                                        </span>
+                                        <input type="url"
+                                               class="form-control @error('url') is-invalid @enderror"
+                                               id="url"
+                                               name="url"
+                                               value="{{ old('url', $clip->url) }}"
+                                               {{ ($clip->type ?? 'url') === 'url' ? 'required' : '' }}
+                                               placeholder="https://example.com/your-long-url"
+                                               autocomplete="url">
+                                        <button type="button" class="btn btn-outline-secondary" id="validateUrl">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </div>
+                                    @error('url')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Update the destination URL where users will be redirected
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- HTML Tab -->
+                            <div class="tab-pane fade {{ ($clip->type ?? 'url') === 'html' ? 'show active' : '' }}" id="htmlPane" role="tabpanel">
+                                <div class="mb-4">
+                                    <label for="htmlSource" class="form-label fw-bold">
+                                        <i class="fas fa-code me-2 text-primary"></i>HTML Content
+                                    </label>
+                                    <textarea class="form-control @error('html') is-invalid @enderror"
+                                              id="htmlSource"
+                                              name="html"
+                                              rows="12"
+                                              placeholder="<h1>Hello World</h1>">{{ old('html', $clip->html) }}</textarea>
+                                    @error('html')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Current Short URL Display -->
                         <div class="mb-4">
@@ -60,38 +130,6 @@
                             <div class="form-text">
                                 <i class="fas fa-info-circle me-1"></i>
                                 This short URL cannot be changed once created
-                            </div>
-                        </div>
-
-                        <!-- URL Input -->
-                        <div class="mb-4">
-                            <label for="url" class="form-label fw-bold">
-                                <i class="fas fa-globe me-2"></i>Original URL *
-                            </label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="fas fa-link"></i>
-                                </span>
-                                <input type="url"
-                                       class="form-control @error('url') is-invalid @enderror"
-                                       id="url"
-                                       name="url"
-                                       value="{{ old('url', $clip->url) }}"
-                                       required
-                                       placeholder="https://example.com/your-long-url"
-                                       autocomplete="url">
-                                <button type="button" class="btn btn-outline-secondary" id="validateUrl">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                            </div>
-                            @error('url')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                            <div class="form-text">
-                                <i class="fas fa-info-circle me-1"></i>
-                                Update the destination URL where users will be redirected
                             </div>
                         </div>
 
@@ -248,10 +286,37 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
 <script>
+    // Init CodeMirror
+    const htmlEditor = CodeMirror.fromTextArea(document.getElementById('htmlSource'), {
+        mode: 'htmlmixed',
+        lineNumbers: true,
+        lineWrapping: true,
+    });
+
+    // Tab switching: update hidden type input + toggle required
+    const typeInput = document.getElementById('clipType');
+    const urlInput = document.getElementById('url');
+    const linkTab = document.getElementById('link-tab');
+    const htmlTab = document.getElementById('html-tab');
+
+    linkTab.addEventListener('shown.bs.tab', function() {
+        typeInput.value = 'url';
+        urlInput.required = true;
+    });
+    htmlTab.addEventListener('shown.bs.tab', function() {
+        typeInput.value = 'html';
+        urlInput.required = false;
+    });
+
     // Copy to clipboard functionality with fallback
     function copyToClipboard(text) {
-        // Try modern clipboard API first
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(text).then(function() {
                 showCopySuccess();
@@ -260,12 +325,10 @@
                 fallbackCopyToClipboard(text);
             });
         } else {
-            // Fallback for older browsers or insecure contexts
             fallbackCopyToClipboard(text);
         }
     }
 
-    // Fallback copy method
     function fallbackCopyToClipboard(text) {
         const textArea = document.createElement('textarea');
         textArea.value = text;
@@ -291,7 +354,6 @@
         document.body.removeChild(textArea);
     }
 
-    // Show success message
     function showCopySuccess() {
         const toast = document.createElement('div');
         toast.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3';
@@ -301,13 +363,9 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
         document.body.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
+        setTimeout(() => { toast.remove(); }, 3000);
     }
 
-    // Show error message
     function showCopyError() {
         const toast = document.createElement('div');
         toast.className = 'alert alert-warning alert-dismissible fade show position-fixed top-0 end-0 m-3';
@@ -317,10 +375,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
         document.body.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-        }, 5000);
+        setTimeout(() => { toast.remove(); }, 5000);
     }
 
     // Toggle password fields
@@ -371,7 +426,6 @@
         const url = urlInput.value;
 
         if (url) {
-            // Simple URL validation
             try {
                 new URL(url);
                 this.innerHTML = '<i class="fas fa-check text-success"></i>';
@@ -387,14 +441,8 @@
 
     // Form validation
     document.getElementById('clipForm').addEventListener('submit', function(e) {
-        const url = document.getElementById('url').value;
-
-        // Validate URL
-        if (!url) {
-            e.preventDefault();
-            alert('Please enter a URL');
-            return;
-        }
+        // Sync CodeMirror back to textarea
+        htmlEditor.save();
 
         // Convert local datetime to UTC before submission
         const expirationEnabled = document.getElementById('enableExpiration').checked;
@@ -402,19 +450,14 @@
 
         if (expirationEnabled && expiresAtInput.value) {
             const localDateTime = new Date(expiresAtInput.value);
-            // Convert to UTC ISO string and format for Laravel
             const utcDateTime = localDateTime.toISOString().slice(0, 19).replace('T', ' ');
 
-            // Create a hidden input with the UTC datetime
             const hiddenInput = document.createElement('input');
             hiddenInput.type = 'hidden';
             hiddenInput.name = 'expires_at';
             hiddenInput.value = utcDateTime;
 
-            // Remove the name attribute from the original input to avoid duplication
             expiresAtInput.removeAttribute('name');
-
-            // Add the hidden input to the form
             this.appendChild(hiddenInput);
         }
 

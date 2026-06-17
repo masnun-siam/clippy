@@ -29,7 +29,9 @@ class ClipService
     public function saveClip(Request $request, ?int $id = null) : JsonResponse
     {
         $slug = $request?->slug ?? $this->generateAndGetSlug(6);
-        $url = $request?->url;
+        $type = $request->input('type') === 'html' ? 'html' : 'url';
+        $url = $type === 'url' ? $request->url : null;
+        $html = $type === 'html' ? $request->html : null;
         $password = $request->password;
 
         // Convert datetime to UTC if provided
@@ -57,10 +59,13 @@ class ClipService
 
         if($id) {
             $clip = Clip::find($id);
-            $uc = Clip::where('url', $url)->first();
 
-            if ($uc && $uc->id !== $id) {
-                return error( 'Url already exists', 409);
+            // URL dedup only for URL clips
+            if ($type === 'url') {
+                $uc = Clip::where('url', $url)->first();
+                if ($uc && $uc->id !== $id) {
+                    return error('Url already exists', 409);
+                }
             }
 
             $sclip = Clip::where('slug', $slug)->first();
@@ -71,7 +76,9 @@ class ClipService
 
                 if ($clip) {
                     $clip->slug = $slug;
+                    $clip->type = $type;
                     $clip->url = $url;
+                    $clip->html = $html;
                     $clip->password = $password ? encrypt($password) : null;
                     $clip->expires_at = $expiresAt;
                     $clip->save();
@@ -83,10 +90,12 @@ class ClipService
             }
         }
 
-        $clip = Clip::where('url', $url)->first();
-
-        if ($clip) {
-            return success( 'Clip Already Exists, ignoring slug', $clip->toArray(), 200);
+        // URL dedup only for URL clips
+        if ($type === 'url') {
+            $clip = Clip::where('url', $url)->first();
+            if ($clip) {
+                return success( 'Clip Already Exists, ignoring slug', $clip->toArray(), 200);
+            }
         }
 
         $clip = Clip::where('slug', $slug)->first();
@@ -96,7 +105,9 @@ class ClipService
         } else {
             $clip = new Clip();
             $clip->slug = $slug;
+            $clip->type = $type;
             $clip->url = $url;
+            $clip->html = $html;
             $clip->password = $password ? encrypt($password) : null;
             $clip->expires_at = $expiresAt;
             $clip->save();
@@ -138,16 +149,14 @@ class ClipService
      * @param int $id
      * @param string $password
      */
-    public function verifyPassword(int $id, string $password) : ?string {
+    public function verifyPassword(int $id, string $password) : ?Clip {
         $clip = Clip::find($id);
 
-        $isVerified = false;
-
-        if ($clip?->password) {
-            $isVerified = decrypt($clip->password) === $password;
+        if ($clip && $clip->password && decrypt($clip->password) === $password) {
+            return $clip;
         }
 
-        return $isVerified ? $clip->url : null;
+        return null;
     }
 
     public function deleteClip($id) : JsonResponse

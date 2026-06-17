@@ -256,12 +256,15 @@ class ClipController extends Controller
         }
 
         try {
-            $url = $this->clipService->verifyPassword($id, $password);
-            if ($url) {
-                return redirect($url);
-            } else {
+            $clip = $this->clipService->verifyPassword($id, $password);
+            if (!$clip) {
                 return redirect()->back()->with('error', 'Incorrect Password');
             }
+            if ($clip->type === 'html') {
+                session(["clip_unlocked_{$clip->id}" => true]);
+                return redirect()->route('clip', $clip->slug);
+            }
+            return redirect($clip->url);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Server error');
         }

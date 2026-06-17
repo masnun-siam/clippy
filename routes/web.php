@@ -88,6 +88,12 @@ Route::get('/{slug}', function ($slug) {
         // return custom 404 for expired clips
         return response()->view('errors.clip-404', ['slug' => $slug, 'expired' => true], 404);
     }
+    if ($clip->type === 'html') {
+        if ($clip->password && !session("clip_unlocked_{$clip->id}")) {
+            return view('password', ['clip' => $clip]);
+        }
+        return response()->view('clips.render', ['clip' => $clip]);
+    }
     if($clip->password) {
         // prompt for password
         return view('password', ['clip' => $clip]);

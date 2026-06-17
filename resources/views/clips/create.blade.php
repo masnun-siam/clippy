@@ -30,25 +30,63 @@
 
                     <form method="POST" action="{{ route('clips.store') }}" id="createClipForm">
                         @csrf
+                        <input type="hidden" name="type" id="clipType" value="url">
 
-                        <!-- URL Input -->
-                        <div class="mb-4">
-                            <label for="url" class="form-label fw-bold">
-                                <i class="fas fa-link me-2 text-primary"></i>URL to Shorten
-                            </label>
-                            <input type="url"
-                                   class="form-control form-control-lg @error('url') is-invalid @enderror"
-                                   id="url"
-                                   name="url"
-                                   value="{{ old('url') }}"
-                                   required
-                                   placeholder="https://example.com/very-long-url"
-                                   autocomplete="url">
-                            @error('url')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
+                        <!-- Type Tabs -->
+                        <ul class="nav nav-tabs mb-4" id="clipTypeTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="link-tab" data-bs-toggle="tab" data-bs-target="#linkPane" type="button" role="tab">
+                                    <i class="fas fa-link me-1"></i>Link
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="html-tab" data-bs-toggle="tab" data-bs-target="#htmlPane" type="button" role="tab">
+                                    <i class="fas fa-code me-1"></i>HTML
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <!-- Link Tab -->
+                            <div class="tab-pane fade show active" id="linkPane" role="tabpanel">
+                                <div class="mb-4">
+                                    <label for="url" class="form-label fw-bold">
+                                        <i class="fas fa-link me-2 text-primary"></i>URL to Shorten
+                                    </label>
+                                    <input type="url"
+                                           class="form-control form-control-lg @error('url') is-invalid @enderror"
+                                           id="url"
+                                           name="url"
+                                           value="{{ old('url') }}"
+                                           required
+                                           placeholder="https://example.com/very-long-url"
+                                           autocomplete="url">
+                                    @error('url')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
-                            @enderror
+                            </div>
+
+                            <!-- HTML Tab -->
+                            <div class="tab-pane fade" id="htmlPane" role="tabpanel">
+                                <div class="mb-4">
+                                    <label for="htmlSource" class="form-label fw-bold">
+                                        <i class="fas fa-code me-2 text-primary"></i>HTML Content
+                                    </label>
+                                    <textarea class="form-control @error('html') is-invalid @enderror"
+                                              id="htmlSource"
+                                              name="html"
+                                              rows="12"
+                                              placeholder="<h1>Hello World</h1>">{{ old('html') }}</textarea>
+                                    @error('html')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Custom Alias -->
@@ -183,7 +221,35 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
 <script>
+    // Init CodeMirror
+    const htmlEditor = CodeMirror.fromTextArea(document.getElementById('htmlSource'), {
+        mode: 'htmlmixed',
+        lineNumbers: true,
+        lineWrapping: true,
+    });
+
+    // Tab switching: update hidden type input + toggle required
+    const typeInput = document.getElementById('clipType');
+    const urlInput = document.getElementById('url');
+    const linkTab = document.getElementById('link-tab');
+    const htmlTab = document.getElementById('html-tab');
+
+    linkTab.addEventListener('shown.bs.tab', function() {
+        typeInput.value = 'url';
+        urlInput.required = true;
+    });
+    htmlTab.addEventListener('shown.bs.tab', function() {
+        typeInput.value = 'html';
+        urlInput.required = false;
+    });
+
     // Toggle password fields
     document.getElementById('enablePassword').addEventListener('change', function() {
         const passwordFields = document.getElementById('passwordFields');
@@ -260,25 +326,23 @@
 
     // Form validation and UTC conversion
     document.getElementById('createClipForm').addEventListener('submit', function(e) {
+        // Sync CodeMirror back to textarea
+        htmlEditor.save();
+
         const expirationEnabled = document.getElementById('enableExpiration').checked;
         const expiresAtInput = document.getElementById('expires_at');
 
         // Convert local datetime to UTC before submission
         if (expirationEnabled && expiresAtInput.value) {
             const localDateTime = new Date(expiresAtInput.value);
-            // Convert to UTC ISO string and format for Laravel
             const utcDateTime = localDateTime.toISOString().slice(0, 19).replace('T', ' ');
 
-            // Create a hidden input with the UTC datetime
             const hiddenInput = document.createElement('input');
             hiddenInput.type = 'hidden';
             hiddenInput.name = 'expires_at';
             hiddenInput.value = utcDateTime;
 
-            // Remove the name attribute from the original input to avoid duplication
             expiresAtInput.removeAttribute('name');
-
-            // Add the hidden input to the form
             this.appendChild(hiddenInput);
         }
     });

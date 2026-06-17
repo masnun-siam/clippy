@@ -84,8 +84,13 @@
                                 <tr>
                                     <td>
                                         <div class="url-preview" title="{{ $clip->url }}">
-                                            <i class="fas fa-external-link-alt me-2 text-muted"></i>
-                                            {{ $clip->url }}
+                                            @if($clip->isHtml())
+                                                <i class="fas fa-code me-2 text-info"></i>
+                                                <span class="badge bg-info">HTML</span>
+                                            @else
+                                                <i class="fas fa-external-link-alt me-2 text-muted"></i>
+                                                {{ $clip->url }}
+                                            @endif
                                         </div>
                                     </td>
                                     <td>

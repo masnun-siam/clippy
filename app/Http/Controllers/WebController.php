@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class WebController extends Controller
 {
@@ -140,10 +141,19 @@ class WebController extends Controller
      */
     public function createClip(Request $request): RedirectResponse
     {
+        if ($request->filled('custom_alias')) {
+            $request->merge(['slug' => $request->custom_alias]);
+        }
+
+        $type = $request->input('type') === 'html' ? 'html' : 'url';
         $request->validate([
-            'url' => 'required|url',
-            'password' => 'nullable|string|min:4',
-            'expires_at' => 'nullable|date|after:now',
+            'type'         => 'nullable|in:url,html',
+            'url'          => [$type === 'url'  ? 'required' : 'nullable', 'url'],
+            'html'         => [$type === 'html' ? 'required' : 'nullable', 'string'],
+            'custom_alias' => ['nullable', 'regex:/^[A-Za-z0-9_-]+$/',
+                               Rule::notIn(['login','register','dashboard','clips','logout','clip','docs','cache','clear'])],
+            'password'     => 'nullable|string|min:4',
+            'expires_at'   => 'nullable|date|after:now',
         ]);
 
         try {
@@ -168,10 +178,19 @@ class WebController extends Controller
      */
     public function updateClip(Request $request, int $id): RedirectResponse
     {
+        if ($request->filled('custom_alias')) {
+            $request->merge(['slug' => $request->custom_alias]);
+        }
+
+        $type = $request->input('type') === 'html' ? 'html' : 'url';
         $request->validate([
-            'url' => 'required|url',
-            'password' => 'nullable|string|min:4',
-            'expires_at' => 'nullable|date|after:now',
+            'type'         => 'nullable|in:url,html',
+            'url'          => [$type === 'url'  ? 'required' : 'nullable', 'url'],
+            'html'         => [$type === 'html' ? 'required' : 'nullable', 'string'],
+            'custom_alias' => ['nullable', 'regex:/^[A-Za-z0-9_-]+$/',
+                               Rule::notIn(['login','register','dashboard','clips','logout','clip','docs','cache','clear'])],
+            'password'     => 'nullable|string|min:4',
+            'expires_at'   => 'nullable|date|after:now',
         ]);
 
         try {

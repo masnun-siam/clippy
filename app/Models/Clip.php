@@ -12,9 +12,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string $slug
- * @property string $url
+ * @property string|null $url
  * @property string|null $password
  * @property string|null $expires_at
+ * @property string $type
+ * @property string|null $html
  * @method static \Illuminate\Database\Eloquent\Builder|Clip newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Clip newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Clip query()
@@ -38,7 +40,9 @@ class Clip extends Model
      */
     protected $fillable = [
         'slug',
+        'type',
         'url',
+        'html',
         'password',
         'expires_at',
     ];
@@ -66,6 +70,11 @@ class Clip extends Model
     /**
      * Check if the clip is expired
      */
+    public function isHtml(): bool
+    {
+        return $this->type === 'html';
+    }
+
     public function isExpired(): bool
     {
         return $this->expires_at && now()->isAfter($this->expires_at);
