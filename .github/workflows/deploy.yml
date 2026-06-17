@@ -26,11 +26,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
 
       - name: Install & build frontend
         run: |
-          npm ci
+          npm install
           npm run build
 
       - name: Prepare deploy artifact
@@ -61,5 +60,3 @@ jobs:
             node_modules/**
             .phpunit.result.cache
             docker-compose.yml
-
-
