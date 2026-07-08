@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Clip;
 use App\Services\ClipService;
+use App\Services\ClickTrackingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -15,8 +16,10 @@ use Illuminate\Http\RedirectResponse;
  */
 class ClipController extends Controller
 {
-    public function __construct(protected ClipService $clipService)
-    {
+    public function __construct(
+        protected ClipService $clipService,
+        protected ClickTrackingService $clickTrackingService,
+    ) {
     }
 
     /**
@@ -217,7 +220,6 @@ class ClipController extends Controller
         try {
             return $this->clipService->getClip($slug, request()->password ?? null);
         } catch (\Exception $e) {
-            dd($e);
             return error('Server error ' . $e->getMessage(), 500);
         }
     }
@@ -260,6 +262,8 @@ class ClipController extends Controller
             if (!$clip) {
                 return redirect()->back()->with('error', 'Incorrect Password');
             }
+            // Record click with passed_password=true (counts once for protected clips)
+            $this->clickTrackingService->record($request, $clip, true);
             if ($clip->type === 'html') {
                 session(["clip_unlocked_{$clip->id}" => true]);
                 return redirect()->route('clip', $clip->slug);

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Clip
@@ -45,6 +46,7 @@ class Clip extends Model
         'html',
         'password',
         'expires_at',
+        'clicks_count',
     ];
 
     /**
@@ -54,6 +56,7 @@ class Clip extends Model
      */
     protected $casts = [
         'expires_at' => 'datetime',
+        'clicks_count' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -121,5 +124,13 @@ class Clip extends Model
     public function scopePasswordProtected($query)
     {
         return $query->whereNotNull('password');
+    }
+
+    /**
+     * Get the click events for this clip
+     */
+    public function clicks(): HasMany
+    {
+        return $this->hasMany(ClickEvent::class);
     }
 }

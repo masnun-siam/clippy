@@ -37,6 +37,7 @@ class WebController extends Controller
             'expired' => $clips->filter(function ($clip) {
                 return !is_null($clip->expires_at) && $clip->expires_at < now();
             })->count(),
+            'total_clicks' => $clips->sum('clicks_count'),
         ];
 
         return view('dashboard', compact('clips', 'stats'));

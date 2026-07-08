@@ -28,7 +28,8 @@ class ClipService
 
     public function saveClip(Request $request, ?int $id = null) : JsonResponse
     {
-        $slug = $request?->slug ?? $this->generateAndGetSlug(6);
+        $existingSlug = $id ? optional(Clip::find($id))->slug : null;
+        $slug = $request->input('slug') ?? $existingSlug ?? $this->generateAndGetSlug(6);
         $type = $request->input('type') === 'html' ? 'html' : 'url';
         $url = $type === 'url' ? $request->url : null;
         $html = $type === 'html' ? $request->html : null;

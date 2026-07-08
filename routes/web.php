@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ClipController;
 use App\Http\Controllers\WebController;
+use App\Services\ClickTrackingService;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -67,6 +69,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/clips/{id}/edit', [WebController::class, 'showEditClip'])->name('clips.edit');
     Route::put('/clips/{id}', [WebController::class, 'updateClip'])->name('clips.update');
     Route::delete('/clips/{id}', [WebController::class, 'deleteClip'])->name('clips.destroy');
+
+    // Analytics routes
+    Route::get('/clips/{id}/analytics', [AnalyticsController::class, 'show'])->name('clips.analytics');
+    Route::get('/clips/{id}/analytics/events', [AnalyticsController::class, 'events'])->name('clips.analytics.events');
+    Route::get('/clips/{id}/analytics/export', [AnalyticsController::class, 'exportCsv'])->name('clips.analytics.export');
 });
 
 // Public clip access routes
@@ -92,6 +99,11 @@ Route::get('/{slug}', function ($slug) {
         if ($clip->password && !session("clip_unlocked_{$clip->id}")) {
             return view('password', ['clip' => $clip]);
         }
+        // Record click only for non-password-protected HTML clips
+        // Protected clips are counted once in verifyPassword with passed_password=true
+        if (!$clip->password) {
+            app(ClickTrackingService::class)->record(request(), $clip, false);
+        }
         return response()->view('clips.render', ['clip' => $clip]);
     }
     if($clip->password) {
@@ -99,6 +111,7 @@ Route::get('/{slug}', function ($slug) {
         return view('password', ['clip' => $clip]);
     }
     else {
+        app(ClickTrackingService::class)->record(request(), $clip, false);
         return redirect($clip->url);
     }
 })->name('clip');

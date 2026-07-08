@@ -17,28 +17,34 @@
 
     <!-- Stats Cards -->
     <div class="row mb-5">
-        <div class="col-md-3 col-sm-6 mb-4">
+        <div class="col-md-2 col-sm-6 mb-4">
             <div class="stats-card">
                 <div class="stats-number">{{ $stats['total'] }}</div>
                 <div class="text-muted">Total Links</div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6 mb-4">
+        <div class="col-md-2 col-sm-6 mb-4">
             <div class="stats-card">
                 <div class="stats-number">{{ $stats['active'] }}</div>
                 <div class="text-muted">Active Links</div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6 mb-4">
+        <div class="col-md-2 col-sm-6 mb-4">
             <div class="stats-card">
                 <div class="stats-number">{{ $stats['protected'] }}</div>
                 <div class="text-muted">Protected Links</div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6 mb-4">
+        <div class="col-md-2 col-sm-6 mb-4">
             <div class="stats-card">
                 <div class="stats-number">{{ $stats['expired'] }}</div>
                 <div class="text-muted">Expired Links</div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="stats-card">
+                <div class="stats-number">{{ number_format($stats['total_clicks']) }}</div>
+                <div class="text-muted">Total Clicks</div>
             </div>
         </div>
     </div>
@@ -76,6 +82,7 @@
                                 <th>Status</th>
                                 <th>Created</th>
                                 <th>Expires</th>
+                                <th>Clicks</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -133,6 +140,11 @@
                                         @else
                                             <span class="text-muted">Never</span>
                                         @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('clips.analytics', $clip->id) }}" class="badge bg-primary text-decoration-none" title="View analytics">
+                                            <i class="fas fa-chart-bar me-1"></i>{{ $clip->clicks_count }}
+                                        </a>
                                     </td>
                                     <td>
                                         <div class="clip-actions">
