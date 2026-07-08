@@ -6,7 +6,7 @@ use App\Models\Clip;
 use App\Models\ClickEvent;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Http\StreamedResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\View\View;
 
 class AnalyticsController extends Controller

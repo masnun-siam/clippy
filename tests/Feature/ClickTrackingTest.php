@@ -7,6 +7,7 @@ use App\Models\ClickEvent;
 use App\Models\User;
 use Database\Factories\ClipFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ClickTrackingTest extends TestCase
@@ -22,7 +23,7 @@ class ClickTrackingTest extends TestCase
         return $user;
     }
 
-    /** @test */
+    #[Test]
     public function url_redirect_records_click(): void
     {
         $clip = Clip::factory()->create(['type' => 'url', 'password' => null]);
@@ -41,7 +42,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals('desktop', $event->device_type);
     }
 
-    /** @test */
+    #[Test]
     public function googlebot_ua_does_not_record_click(): void
     {
         $clip = Clip::factory()->create(['type' => 'url', 'password' => null]);
@@ -54,7 +55,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals(0, ClickEvent::where('clip_id', $clip->id)->count());
     }
 
-    /** @test */
+    #[Test]
     public function curl_ua_does_not_record_click(): void
     {
         $clip = Clip::factory()->create(['type' => 'url', 'password' => null]);
@@ -67,7 +68,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals(0, ClickEvent::where('clip_id', $clip->id)->count());
     }
 
-    /** @test */
+    #[Test]
     public function empty_ua_does_not_record_click(): void
     {
         $clip = Clip::factory()->create(['type' => 'url', 'password' => null]);
@@ -80,7 +81,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals(0, ClickEvent::where('clip_id', $clip->id)->count());
     }
 
-    /** @test */
+    #[Test]
     public function html_render_records_click(): void
     {
         $clip = Clip::factory()->html()->create(['password' => null]);
@@ -99,7 +100,7 @@ class ClickTrackingTest extends TestCase
         $this->assertNotNull($event->device_type);
     }
 
-    /** @test */
+    #[Test]
     public function correct_password_unlock_records_click_with_passed_password(): void
     {
         $clip = Clip::factory()->create([
@@ -120,7 +121,7 @@ class ClickTrackingTest extends TestCase
         $this->assertTrue($event->passed_password);
     }
 
-    /** @test */
+    #[Test]
     public function protected_html_not_double_counted(): void
     {
         $clip = Clip::factory()->html()->create([
@@ -145,7 +146,7 @@ class ClickTrackingTest extends TestCase
         $this->assertTrue($event->passed_password);
     }
 
-    /** @test */
+    #[Test]
     public function password_prompt_view_does_not_record_click(): void
     {
         $clip = Clip::factory()->create([
@@ -161,7 +162,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals(0, ClickEvent::where('clip_id', $clip->id)->count());
     }
 
-    /** @test */
+    #[Test]
     public function expired_clip_returns_404_with_no_click(): void
     {
         $clip = Clip::factory()->expired()->create();
@@ -174,7 +175,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals(0, ClickEvent::where('clip_id', $clip->id)->count());
     }
 
-    /** @test */
+    #[Test]
     public function reserved_slug_returns_404_with_no_click(): void
     {
         $this->get('/login', ['User-Agent' => self::CHROME_UA])
@@ -183,7 +184,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals(0, ClickEvent::count());
     }
 
-    /** @test */
+    #[Test]
     public function unique_calculation_distinct_ip_ua_pairs(): void
     {
         $clip = Clip::factory()->create(['type' => 'url', 'password' => null]);
@@ -227,7 +228,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals(2, $uniqueClicks);
     }
 
-    /** @test */
+    #[Test]
     public function utm_and_referer_captured(): void
     {
         $clip = Clip::factory()->create(['type' => 'url', 'password' => null]);
@@ -244,7 +245,7 @@ class ClickTrackingTest extends TestCase
         $this->assertEquals('https://twitter.com/someone/status/123', $event->referer);
     }
 
-    /** @test */
+    #[Test]
     public function csv_export_returns_rows(): void
     {
         $user = $this->actingAsUser();
@@ -270,7 +271,7 @@ class ClickTrackingTest extends TestCase
         $this->assertStringContainsString('TestAgent', $content);
     }
 
-    /** @test */
+    #[Test]
     public function analytics_page_redirects_when_unauthenticated(): void
     {
         $clip = Clip::factory()->create();
@@ -279,7 +280,7 @@ class ClickTrackingTest extends TestCase
             ->assertRedirect('/login');
     }
 
-    /** @test */
+    #[Test]
     public function analytics_page_loads_when_authenticated(): void
     {
         $this->actingAsUser();
