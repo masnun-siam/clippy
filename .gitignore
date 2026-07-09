@@ -20,3 +20,4 @@ yarn-error.log
 /.vscode
 *.zipdeploy.sh
 /.a5c/logs
+*.zip
